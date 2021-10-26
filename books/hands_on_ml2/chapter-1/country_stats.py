@@ -2,6 +2,7 @@ import numpy as np
 from numpy.core.defchararray import count 
 import pandas as pd 
 import sklearn.linear_model
+import sklearn.neighbors
 import matplotlib.pyplot as plt
 
 def prepare_country_stats(oecd_bli, gdp_per_capita):
@@ -23,15 +24,16 @@ country_stats = prepare_country_stats(oecd_bli, gdp_per_capita)
 X = np.c_[country_stats["GDP per capita"]]
 y = np.c_[country_stats["Life satisfaction"]]
 
-# country_stats.plot(kind='scatter', x="GDP per capita", y="Life satisfaction")
-# plt.show()
+country_stats.plot(kind='scatter', x="GDP per capita", y="Life satisfaction")
+plt.show()
 
-model = sklearn.linear_model.LinearRegression()
+#model = sklearn.linear_model.LinearRegression()
+model = sklearn.neighbors.KNeighborsRegressor(n_neighbors=3)
 
 model.fit(X, y)
 
 X_new = [[22587]]
-# print(model.predict(X_new))
+print(model.predict(X_new))
 
 oecd_bli = oecd_bli[oecd_bli["INEQUALITY"]=="TOT"]
 oecd_bli = oecd_bli.pivot(index="Country", columns="Indicator", values="Value")
