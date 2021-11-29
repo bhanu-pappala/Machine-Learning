@@ -16,7 +16,7 @@ trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
 testset = torchvision.datasets.CIFAR10(root="./data",
         train=False, download=True, transform=transform)
 testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-        shuffle=True, num_workers=2)
+        shuffle=True, num_workers=0)
 
 classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog',
         'frog', 'horse', 'ship',  'truck')
@@ -104,3 +104,52 @@ images, labels = dataiter.next()
 imshow(torchvision.utils.make_grid(images))
 print("GroundTruth: ", " ".join("%5s" % classes[labels[j]] for j in range(4)))
 
+outputs = net(images)
+_, predicted = torch.max(outputs, 1)
+
+print("Predicted: ", ' '.join('%5s' %classes[predicted[j]] for j in range(4)))
+
+correct = 0
+total = 0
+
+with torch.no_grad():
+    for data in testloader:
+        images, labels = data
+        outputs = net(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+
+print("Accuracy of the network on the 10000 test images: %d %%" % (
+        100 * correct / total))
+
+#Count predictions for each class
+
+correct_pred = {classname: 0 for classname in classes}
+total_pred = {classname: 0 for classname in classes}
+
+with torch.no_grad():
+    for data in testloader:
+        images, labels = data
+        outputs = net(images)
+        _, predictions = torch.max(outputs, 1)
+        for label, prediction in zip(labels, predictions):
+            if label == prediction:
+                correct_pred[classes[label]] += 1
+            total_pred[classes[label]] += 1
+
+#print class accuracy for each class
+
+for classname, correct_count in correct_pred.items():
+    accuracy = 100 * float(correct_count) / total_pred[classname]
+    print("Accuracy for class {:5s} is: {:.1f} %".format(classname, accuracy))
+
+#On GPU
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print(device)
+
+net.to(device)
+
+inputs, labels = data[0].to(device), data[1].to(device)

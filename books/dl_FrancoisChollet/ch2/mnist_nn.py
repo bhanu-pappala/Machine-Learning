@@ -28,5 +28,5 @@ print("test acc: ", test_acc)
 
 
 digit = train_images[5]
-plt.imshow(digit, cmap=plt.cm.binary)
-plt.show()
+#plt.imshow(digit, cmap=plt.cm.binary)
+#plt.show()

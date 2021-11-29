@@ -60,3 +60,25 @@ from sklearn.model_selection import cross_val_score
 print(cross_val_score(sgd_clf, X_train, y_train_5, cv=3, scoring='accuracy'))
 
 
+# Never 5 classifier (dumb classifier)
+
+from sklearn.base import BaseEstimator
+
+class Never5Classifier(BaseEstimator):
+    def fit(self, X, y=None):
+        pass
+    def predict(self, X):
+        return np.zeros((len(X), 1), dtype=bool)
+
+never_5_clf = Never5Classifier()
+print(cross_val_score(never_5_clf, X_train, y_train, cv=3, scoring="accuracy"))
+
+#Confusion Matrix
+
+from sklearn.model_selection import cross_val_predict
+
+y_train_pred = cross_val_predict(sgd_clf, X_train, y_train, cv=3)
+
+from sklearn.metric import confusion_matrix
+
+print(confusion_matrix(y_train_5, y_train_pred))
